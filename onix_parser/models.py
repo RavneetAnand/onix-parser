@@ -6,6 +6,7 @@ Base = declarative_base()
 class Book(Base):
     __tablename__ = 'books'
     id = Column(Integer, primary_key=True, autoincrement=True)
+    isbn = Column(String(13), unique=True)
     title = Column(String(255))
 
 class Country(Base):

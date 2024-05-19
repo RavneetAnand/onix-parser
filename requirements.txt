@@ -1,4 +1,6 @@
+fastapi
 sqlalchemy
 pymysql
 lxml
 pytest
+uvicorn
