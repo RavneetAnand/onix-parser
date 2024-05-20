@@ -25,17 +25,12 @@ def validate_file_name(file_name):
 async def upload_file(file_name: str):
   file_path = validate_file_name(file_name)
 
-  print(f"Processing file: {file_path}")
-  # Call the parse_onix function
   parse_onix(file_path)
 
 @app.get("/getcountries/{file_name}")
 async def getcountries(file_name: str):
   file_path = validate_file_name(file_name)
 
-  print(f"Getting countries for file: {file_path}")
-  # Call the get_book_sales_rights_countries function
-  # and return the result
   countries = get_book_sales_rights_countries(file_path)
-  print(f"main_countries: {countries}")
+
   return {"countries": countries}

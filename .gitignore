@@ -1,4 +1,6 @@
 dev
 OnixDocs
 sample_data
-onix_parser/__pycache__
+__pycache__
+src/onix_parser/__pycache__
+src/database/__pycache__

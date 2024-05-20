@@ -1,5 +1,8 @@
 from lxml import etree
 from src.onix_parser.query_utils import add_country, add_book, get_countries_by_book
+import logging
+
+logging.basicConfig(level=logging.ERROR)
 
 # Tag mappings for normal and short tags
 tag_mappings = {
@@ -26,9 +29,10 @@ def extract_isbn(product):
 
         raise ValueError("ISBN not found in the provided ONIX file.")
     except etree.XMLSyntaxError as e:
-        print(f"XML syntax error: {e}")
+        logging.error("XML syntax error: ", e)
+
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        logging.error("Unexpected error: ", e)
 
 def parse_onix(file_path):
     try:
@@ -48,7 +52,6 @@ def parse_onix(file_path):
 
             title = titleList[0].text
             isbn = extract_isbn(product)
-            print(title, isbn)
 
             book = add_book(title, isbn)
 
@@ -62,18 +65,17 @@ def parse_onix(file_path):
                     raise ValueError("Missing countries in ONIX data")
 
                 countries = countriesList[0].text.split()
-                print(countries)
 
                 for country_code in countries:
                     if country_code:
                         add_country(book, country_code)
 
     except etree.XMLSyntaxError as e:
-        print(f"XML syntax error: {e}")
+        logging.error("XML syntax error", e)
     except ValueError as e:
-        print(f"Value error: {e}")
+        logging.error("Value error", e)
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        logging.error("Unexpected error", e)
 
 def get_book_sales_rights_countries(file_path):
     try:
@@ -86,13 +88,12 @@ def get_book_sales_rights_countries(file_path):
         for product in tree.xpath(product_xpath):
             isbn = extract_isbn(product)
             countries = get_countries_by_book(isbn)
-            print(countries)
             return countries
 
     except etree.XMLSyntaxError as e:
-        print(f"XML syntax error: {e}")
+        logging.error("XML syntax error", e)
     except ValueError as e:
-        print(f"Value error: {e}")
+        logging.error("Value error", e)
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        logging.error("Unexpected error", e)
 
