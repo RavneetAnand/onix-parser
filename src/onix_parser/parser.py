@@ -1,5 +1,5 @@
 from lxml import etree
-from onix_parser.query_utils import add_country, add_book
+from src.onix_parser.query_utils import add_country, add_book, get_countries_by_book
 
 # Tag mappings for normal and short tags
 tag_mappings = {
@@ -74,3 +74,25 @@ def parse_onix(file_path):
         print(f"Value error: {e}")
     except Exception as e:
         print(f"Unexpected error: {e}")
+
+def get_book_sales_rights_countries(file_path):
+    try:
+        tree = etree.parse(file_path)
+        if tree is None:
+            raise ValueError("No data found in ONIX file")
+
+        product_xpath = '{}'.format('|'.join(tag_mappings['Product']))
+
+        for product in tree.xpath(product_xpath):
+            isbn = extract_isbn(product)
+            countries = get_countries_by_book(isbn)
+            print(countries)
+            return countries
+
+    except etree.XMLSyntaxError as e:
+        print(f"XML syntax error: {e}")
+    except ValueError as e:
+        print(f"Value error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+

@@ -1,7 +1,6 @@
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import and_, exists
-from onix_parser.models import Book, Country
-from .database import session
+from src.database.models import Book, Country
+from src.database.database import session
 
 # Function to add book only if isbn doesn't exist
 def add_book(title, isbn):
@@ -32,3 +31,16 @@ def add_country(book, country_code):
         print("Country with this code already exists.")
 
     session.commit()
+
+def get_countries_by_book(isbn):
+    # Get the book id using the isbn
+    book = session.query(Book).filter_by(isbn=isbn).first()
+    if not book:
+        print("Book not found.")
+        return []
+
+    book_id = book.id
+    print()
+    countries = session.query(Country).filter_by(book_id=book_id).all()
+    print(isbn, book_id)
+    return [country.country_code for country in countries]

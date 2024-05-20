@@ -1,7 +1,7 @@
 import pytest
-from onix_parser.database import init_db, session
-from onix_parser.parser import parse_onix
-from onix_parser.models import Book, Country
+from src.database.database import init_db, session
+from src.onix_parser.parser import parse_onix
+from src.database.models import Book, Country
 
 @pytest.fixture(scope='module')
 def setup_database():
