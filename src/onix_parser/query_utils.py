@@ -17,6 +17,8 @@ def add_book(title, isbn):
 
 def add_country(book, country_code):
     country = session.query(Country).filter_by(country_code = country_code).first()
+    if not country:
+      return
 
     # Check if a country with the given code already exists in the table book_country_association
     stmt_country_exists = select(book_country_association.columns.book_id).where(
