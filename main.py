@@ -21,14 +21,24 @@ def validate_file_name(file_name):
 
   return file_path
 
-@app.post("/uploadfile/")
-async def upload_file(file_name: str):
+@app.post("/parse/")
+async def parse_file(file_name: str):
+  """
+    Parse the ONIX file and upload the countries where the book can be sold.
+
+    - **file_name**: The ONIX file to be parsed.
+    """
   file_path = validate_file_name(file_name)
 
   parse_onix(file_path)
 
 @app.get("/getcountries/{file_name}")
 async def getcountries(file_name: str):
+  """
+    Get the countries where the book can be sold.
+
+    - **file_name**: The name of the book's ONIX file.
+    """
   file_path = validate_file_name(file_name)
 
   countries = get_book_sales_rights_countries(file_path)

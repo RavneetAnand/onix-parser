@@ -4,3 +4,4 @@ pymysql
 lxml
 pytest
 uvicorn
+python-dotenv
