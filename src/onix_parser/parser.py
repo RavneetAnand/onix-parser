@@ -1,5 +1,5 @@
 from lxml import etree
-from src.onix_parser.query_utils import add_country, add_book, get_countries_by_book
+from src.onix_parser.query_utils import add_countries, add_book, get_countries_by_book
 from itertools import product
 import logging
 
@@ -52,11 +52,11 @@ def extract_isbn(product):
                 return isbn
 
         raise ValueError("ISBN not found in the provided ONIX file.")
-    except etree.XMLSyntaxError as e:
-        logging.error("XML syntax error: ", e)
 
+    except etree.XMLSyntaxError as e:
+        logging.error(f"XML syntax error: {e.msg}")
     except Exception as e:
-        logging.error("Unexpected error: ", e)
+        logging.error(f"Unexpected error: {e.args[0]}")
 
 def parse_onix(file_path):
     try:
@@ -85,16 +85,15 @@ def parse_onix(file_path):
                 raise ValueError("Missing countries in ONIX data")
 
             countries = countriesList[0].text.split()
-            for country_code in countries:
-                if country_code:
-                    add_country(book, country_code)
+            country_codes = [country_code for country_code in countries]
+            add_countries(book, country_codes)
 
     except etree.XMLSyntaxError as e:
-        logging.error("XML syntax error: ", e.msg)
+        logging.error(f"XML syntax error: {e.msg}")
     except ValueError as e:
-        logging.error("Value error: " + e.args[0])
+        logging.error(f"Value error: {e.args[0]}")
     except Exception as e:
-        logging.error("Unexpected error: ", e.args[0])
+        logging.error(f"Unexpected error: {e.args[0]}")
 
 def get_book_sales_rights_countries(file_path):
     try:
@@ -110,9 +109,9 @@ def get_book_sales_rights_countries(file_path):
             return countries
 
     except etree.XMLSyntaxError as e:
-        logging.error("XML syntax error: ", e.msg)
+        logging.error(f"XML syntax error: {e.msg}")
     except ValueError as e:
-        logging.error("Value error: " + e.args[0])
+        logging.error(f"Value error: {e.args[0]}")
     except Exception as e:
-        logging.error("Unexpected error: ", e.args[0])
+        logging.error(f"Unexpected error: {e.args[0]}")
 

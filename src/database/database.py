@@ -37,7 +37,7 @@ def populate_countries_table(json_file_path):
 
     except Exception as e:
         session.rollback()
-        logging.error("An error occurred", e)
+        logging.error(f"Failed to initialise the table countries: {e}")
 
     finally:
         session.close()
