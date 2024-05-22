@@ -32,7 +32,7 @@ def add_countries(book, country_codes):
       # Fetch all countries with the given country codes
       countries = session.query(Country).filter(Country.country_code.in_(country_codes)).all()
 
-      # Check existing associations in a single query
+      # Check existing associations
       existing_associations = session.execute(
           select(book_country_association.c.country_id)
           .where(and_(
@@ -64,7 +64,7 @@ def add_countries(book, country_codes):
 
 def get_countries_by_book(isbn):
     try:
-      # Get the book id using the isbn
+      # Get the book id using isbn
       stmt = (
           select(Country.name)
           .select_from(Book)

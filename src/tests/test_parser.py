@@ -4,6 +4,8 @@ from onix_parser.parser import parse_onix
 from lxml import etree
 
 class TestParseOnix(unittest.TestCase):
+
+    # Test the parse_onix function with a valid file
     @patch('onix_parser.parser.etree.parse')
     @patch('onix_parser.parser.extract_isbn')
     @patch('onix_parser.parser.add_book')
@@ -34,6 +36,7 @@ class TestParseOnix(unittest.TestCase):
         mock_add_book.assert_called_once()
         mock_add_countries.assert_called()
 
+    # Test the parse_onix function with a valid file but no title
     @patch('onix_parser.parser.etree.parse')
     def test_parse_onix_missing_title(self, mock_etree_parse):
         valid_file_path = "sample_data/2.xml"

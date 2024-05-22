@@ -4,6 +4,8 @@ from database.models import Book
 from onix_parser.query_utils import add_book
 
 class TestAddBookFunction(unittest.TestCase):
+
+    # Test the add_book function with a new title for an existing book
     @patch('database.database.session')
     def test_add_book_already_exists(self, mock_session):
         # Mock the existing book in the database

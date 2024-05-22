@@ -28,6 +28,7 @@ tag_mappings = {
     'ISBN': generate_combinations(['IDValue', 'b244'], ['IDValue']), #['IDValue', 'b244']
 }
 
+# Function to generate the XPath query for the tag combinations to directly access a child element
 def get_tag_combinations(tag_array_1, tag_array_2):
     combinations = list(product(tag_mappings[tag_array_1], tag_mappings[tag_array_2]))
 
@@ -38,12 +39,14 @@ def get_tag_combinations(tag_array_1, tag_array_2):
 
     return xpath_query
 
+
 def extract_isbn(product):
     isbn_product_id_type = '15'
     try:
         # Find the ProductIdentifier elements
         for product_identifier in product.xpath('.//{}'.format('|.//'.join(tag_mappings['ProductIdentifier']))):
-
+            # Loop through the ProductIDType and ISBN elements to find the ISBN
+            # Assuming isbn to be the unique identifier for a book
             product_id_type = product_identifier.xpath('.//{}'.format('|.//'.join(tag_mappings['ProductIDType'])))
             id_value = product_identifier.xpath('.//{}'.format('|.//'.join(tag_mappings['ISBN'])))
 
@@ -67,6 +70,7 @@ def parse_onix(file_path):
         product_xpath = '{}'.format('|'.join(tag_mappings['Product']))
 
         for product in tree.xpath(product_xpath):
+            # Find the TitleText element and extract the title
             titleList = product.xpath('.//{}'.format('|.//'.join(tag_mappings['TitleText'])))
             if titleList is None:
                 raise ValueError("Missing title in ONIX data")
@@ -76,8 +80,10 @@ def parse_onix(file_path):
 
             title = titleList[0].text
             isbn = extract_isbn(product)
+            # Add the book details to the database
             book = add_book(title, isbn)
 
+            # Find the SalesRights and RightsCountry elements and extract the country codes
             countries_xpath = get_tag_combinations('SalesRights', 'RightsCountry')
             countriesList = product.xpath(countries_xpath)
 
@@ -86,6 +92,7 @@ def parse_onix(file_path):
 
             countries = countriesList[0].text.split()
             country_codes = [country_code for country_code in countries]
+            # Save the country codes for the book
             add_countries(book, country_codes)
 
     except etree.XMLSyntaxError as e:
@@ -104,6 +111,7 @@ def get_book_sales_rights_countries(file_path):
         product_xpath = '{}'.format('|'.join(tag_mappings['Product']))
 
         for product in tree.xpath(product_xpath):
+            # Get isbn as the unique identifier for the book to fetch the countries
             isbn = extract_isbn(product)
             countries = get_countries_by_book(isbn)
             return countries

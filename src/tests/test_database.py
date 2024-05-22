@@ -4,6 +4,8 @@ import json
 from database.database import populate_countries_table, init_db
 
 class TestDatabaseFunctions(unittest.TestCase):
+
+    # Test the populate_countries_table function
     @patch('database.database.session')
     @patch('database.database.open', new_callable=mock_open, read_data='{"US": "United States", "CA": "Canada"}')
     def test_populate_countries_table(self, mock_file, mock_session):
@@ -26,6 +28,7 @@ class TestDatabaseFunctions(unittest.TestCase):
             # Check that session.commit was called once
             mock_session.commit.assert_called_once()
 
+    # Test the init_db function
     @patch('database.database.populate_countries_table')
     @patch('database.database.engine')
     def test_init_db(self, mock_engine, mock_populate_countries_table):

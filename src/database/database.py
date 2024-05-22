@@ -16,6 +16,7 @@ engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+# Function to populate the countries table
 def populate_countries_table(json_file_path):
     try:
         # Check if the countries table is empty
@@ -42,6 +43,7 @@ def populate_countries_table(json_file_path):
     finally:
         session.close()
 
+# Function to initialise the database
 def init_db():
     from .models import Base
     Base.metadata.create_all(engine)
