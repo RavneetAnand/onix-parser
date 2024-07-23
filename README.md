@@ -1,46 +1,129 @@
-# Perlego take-home assignment - Python specific
-Hello and welcome to the domain specific Perlego developer assessment. Congratulations on passing the initial interview; now we are going to test your skills through a realistic challenge that you could experience on the job.
-The role you are applying for will require you to have an understanding of Python so today we are going to focus on testing your ability to create and test a solution using Python.
+# Onix file parser service
 
-## The Task
-For the challenge, we would like you to determine what countries each of the 4 books in the sample data set can be sold in.
+============================
 
-## Requirements:
-1. The solution must be able to read Sales Rights information for Book records using the ONIX 3.0 standard.
-2. The solution must be able read Sales Rights information for Book records using both the normal tags and also the short tags.
-2. The solution must be able to parse the information and store the results in an appropriately designed MYSQL database containing the countries permitted for the books.
-3. The solution should gracefully handle errors / missing data and exceptions whilst providing appropriate error information.
-4. The solution should have an appropriate automated test mechanism.
+This repository contains the code for a Onix file parser API. The FastAPI service allows for parsing the ebooks ONIX file and upload and fetch the countries where the book can be sold.
 
-## Additional Information:
-1. For the challenge, you are able to use pre-existing XML parsers and existing ORM solutions.
-2. We do not offer a database for you to record the information in, it is recommended you use an online free service to host your MYSQL instance.
-3. ONIX 2.1 is out of scope of this activity. Please do not read, refer or code anything with it in mind, it is significantly different from the 3.0 standard.
-4. We are only interested in retrieving the ​countries, ​not the regions or other more specific sales restrictions.
+This service provides two main endpoints for parsing ONIX 3.0 files and retrieving the countries where books can be sold.
 
-## Document and sample files
-You can find the Onix3 documentation in the OnixDocs folder. The documentation is structured in the following way:
-- The main documentation sits in the `ONIX_for_Books_Format_Specification_3.0.7.pdf` file. This is a very large document containing information about all the fields which can be supplied in an Onix XML file. 
-- Each section of Onix will have a mapping codelist which explains what the values in each composite means.
+### Endpoints
 
-## The Floor is Yours
-There are plenty of options for this assessment, in terms of database design and code design. 
+- `POST /parse/` - Parse and upload to a database an ONIX 3.0 XML file.
+- `GET /getcountries/{file_name}` - Retrieve the countries for a given parsed ONIX file.
 
-We suggest looking at frameworks and ORM's such as Flask, FastAPI, SQLAlchemy, etc.. to help structure your data, show that you can use these frameworks and understand what they're good for. Options like Django could also work, however we think that's one of the more involved framework which is overkill for the task at hand.
+## Prerequisites
 
-What we're looking for is for you to build a solution which we will be able to setup, run and test on our machines, which are probably running different systems, with different versions of Python or these frameworks. To help with this, we highly recommend making use of virtual environments and/or docker with docker-compose, as it will ensure that the environment against which the code will run is the same.
+- Python 3.7+
+- FastAPI
+- Uvicorn
+- Other dependencies as specified in requirements.txt
 
-## Scoring:
+## Database
 
-- Fault tolerant solutions will score more highly.
-- Secure solutions will score more highly than non-secure versions.
-- Solutions using appropriate design patterns and database design will score more highly.
-- Assessments without automated tests will not pass.
-- Creative & over-engineered solutions demonstrating your breadth of skills will score more highly and allow us to understand the breadth and depth of your skills.
-- Assessments that we can not get to work locally will score poorly. When working through the assessment, think “What can I do to make my work stand out?”. As opposed to what is just enough to meet the requirements. We are looking to evaluate the breadth and depth of your skillset with this exercise, not the volume of code you can produce.
+Database used for this app is hosted at AWS MySQL service. App is connecting to it with the help of a connection string.
 
+### Run Using Docker
 
-## Help & Questions
-If there is anything in the assessment that you do not understand or would like clarification on feel free to contact your recruitment contact, they will make sure you have the answer fast enough to unblock you.
+If you prefer to use Docker to run the service, you can containerize the application using a Dockerfile. Ensure Docker is installed on your machine and build the image using the following command:
 
-Good luck!
+```bash
+docker build -t onixparserimage .
+```
+
+Then, you can run the container:
+
+```bash
+docker run -p 3000:3000 onixparserimage
+This command will build the Docker image with the tag onixparserservice and run it, exposing the service on port 3000.
+```
+
+### Running locally
+
+1. Clone the repository.
+2. Create and activate a virtual environment:
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+```
+
+3. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+1. Run the application:
+
+```bash
+uvicorn main:app --reload
+```
+
+2. Endpoints:
+
+#### Note:
+
+All the details about these endpoints can also be found at this `FastAPI - Swagger UI` link: http://127.0.0.1:8000/docs available after succesfully running the application in step 1.
+
+To interact with the endpoint, you can use any HTTP client like curl, Postman, or write client-side code using frameworks/libraries like Axios, Fetch API, etc.
+
+- POST /parse/
+
+  Upload and parse an ONIX 3.0 XML file.
+
+  Request:
+
+  `file_name`: The ONIX 3.0 XML file to be parsed.
+
+  Example using curl:
+
+  ```bash
+  curl -X POST "http://localhost:8000/parse/" -H "Authorization: Bearer mysecrettoken" -F "file_name=1"
+  ```
+
+  This will parse the file named `1.xml` in the sample_data folder and upload the parsed data to AWS MySQL database
+
+  Response:
+
+  - `200 OK` on successful parsing.
+  - `400 Bad Request` if the file name is missing or invalid.
+  - `404 Bad Request` if the file name is not found.
+  - `401 Unauthorized` if the token is invalid.
+
+- GET /countries/{file_name}
+
+  Retrieve the countries for a given parsed ONIX file.
+
+  Request:
+
+  `file_name`: The name of the parsed ONIX file.
+
+  Example using curl:
+
+  ```bash
+  curl -X GET "http://localhost:8000/getcountries/1" -H "Authorization: Bearer mysecrettoken"
+  ```
+
+  Response:
+
+  - `200 OK` with a JSON object containing the countries.
+  - `400 Bad Request` if the file name is missing or invalid.
+  - `404 Bad Request` if the file name is not found.
+  - `401 Unauthorized` if the token is invalid.
+
+4. Run the tests:
+
+```bash
+pytest
+```
+
+## Future Improvements
+
+1. **Security**: Using a hard-coded secret-key for now. This can be saved securely as an environment variable. Also this can be enhanced using the Fast API options like OAuth2 with Password (and hashing)
+2. **Database connection**: For now database connection string can be accessed in the env file. For security purpose, this can be stored in the secrets.
+3. **Typing**: Typing can be used more extensively in the code
+4. **Testing**: Add more unit tests and API tests for all the API route handlers.
+5. **Folder structure**: For now some files are placed together in the folders that can be placed into a separate folder as we scale the app.
+6. **Utils and services**: For now these are placed in the file _parser.py_ but can be placed in a separate file for the sake of reusibility.
