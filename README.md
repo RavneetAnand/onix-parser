@@ -9,7 +9,7 @@ This service provides two main endpoints for parsing ONIX 3.0 files and retrievi
 ### Endpoints
 
 - `POST /parse/` - Parse and upload to a database an ONIX 3.0 XML file.
-- `GET /getcountries/{file_name}` - Retrieve the countries for a given parsed ONIX file.
+- `GET /countries/{file_name}` - Retrieve the countries for a given parsed ONIX file.
 
 ## Prerequisites
 
